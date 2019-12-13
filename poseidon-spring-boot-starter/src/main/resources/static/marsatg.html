@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title id="web-title" >poseidon-web-manager(marsatg)</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .can-click{ cursor:pointer }
+    </style>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="js/vue.min.js"></script>
+
+</head>
+
+<body  >
+
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div style="" class="container-fluid" id="serverNav" ><!--background-color: white;-->
+        <div class="navbar-header">
+            <img style="width: 25%" src="img/spring-marsatg.png">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div >
+
+        <div style="position: absolute;left:70%" class="col-xs-6 col-md-4">
+            <h3 style="color: white">{{applicationInfo.applicationName}}:{{applicationInfo.applicationPort}} <span class="label label-success "  style="font-size:20px">运行中</span></h3>
+        </div>
+        </div>
+    </div>
+</nav>
+
+<div id="showBox" class="container-fluid">
+    <div class="row">
+        <div id="leftMenu" class="col-sm-3 col-md-2 sidebar" style="margin-top: 20px;">
+            <ul class="nav nav-sidebar">
+                <li category="serviceList" class="active"><a href="#">服务列表 <span class="sr-only">(current)</span></a></li>
+                <li category="clientList"><a href="#">客户端列表</a></li>
+                <li category="serverList"><a href="#">服务器列表</a></li>
+
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+            <!--TODO 服务列表-->
+            <div class="listClass" id="serviceListDiv" style="display: none">
+                <h2 class="sub-header">服务列表</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>服务名称</th>
+                            <th>实例化调用名称</th>
+                            <th>类信息</th>
+                            <th>服务简介</th>
+                            <th>方法个数</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="service in serviceList">
+                                <td style="width: 10%">{{service.serviceName}}</td>
+                                <td style="width: 10%">{{service.instanceName}}</td>
+                                <td style="width: 20%">{{service.classInfo}}</td>
+                                <td style="width: 30%">{{service.desc}}</td>
+                                <td>{{service.methodCount}}</td>
+                                <td><a onclick="loadHtml('methodList',this)" class="can-click">查看方法</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+            <div class="listClass" id="methodListDiv" style="display: none">
+                <!--TODO 方法列表-->
+                <h2 class="sub-header">当前服务：{{clickServiceName}}  <button onclick="loadHtml('serviceList')" class="btn btn-info" type="submit">返回</button></h2>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>方法简介</th>
+                            <th>实例化调用名称</th>
+                            <th>方法详情</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for=" method in methodList ">
+                            <td style="width: 20%">{{method.desc}}</td>
+                            <td style="width: 10%">{{method.instanceIovokeName}}</td>
+                            <td>{{method.methodInfo}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+            <div class="listClass" id="clientListDiv" style="display: none">
+                <!--TODO 客户端列表-->
+                <h2 class="sub-header">客户端列表</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>客户端名称</th>
+                            <th>客户端Host</th>
+                            <th>端口</th>
+                            <th>开始连接时间</th>
+                            <th>历史总调用次数</th>
+                            <th>连接状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for=" client in clientList  ">
+                            <td style="width: 10%">{{client.registerName}}</td>
+                            <td style="width: 10%">{{client.clientHost}}</td>
+                            <td style="width: 10%">{{client.clientPort}}</td>
+                            <td style="width: 20%">{{client.startTime}}</td>
+                            <td>{{client.clientCallCount}}</td>
+                            <td style="width: 30%">正常连接</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="listClass" id="serverListDiv" style="display: none">
+                <!--TODO 服务端列表-->
+                <h2 class="sub-header">服务器列表 (阻塞中的请求：{{blockRequestCount}})</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>服务端IP</th>
+                            <th>端口</th>
+                            <th>服务名称</th>
+                            <th>历史总调用次数</th>
+                            <th>连接状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for=" server in serverList  ">
+                            <td style="width: 10%">{{server.serverHost}}</td>
+                            <td style="width: 10%">{{server.serverPort}}</td>
+                            <td style="width: 20%">{{server.serverName}}</td>
+                            <td>{{server.serverCallCount}}</td>
+                            <td style="width: 30%" v-if="server.serverStatus"><button type='button' class='btn btn-success'>正常连接</button></td>
+                            <td style="width: 30%" v-else><button type='button' onclick="manualConnect(this)" class='btn btn-danger'>连接失败</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="js/jquery-1.11.3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/layer/2.3/layer.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+<script src="js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script src="js/holder.min.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="js/ie10-viewport-bug-workaround.js"></script>
+<script src="http/html-list.js"></script>
+
+<script>
+
+
+    
+    $(function () {
+        applicationInfo()
+        loadHtml("serviceList")
+    })
+    
+    $("#leftMenu li").click(function () {
+        $("#leftMenu li").removeClass("active")
+        $(this).addClass("active")
+        var category = $(this).attr("category")
+        loadHtml(category)
+    })
+
+
+
+
+
+</script>
+
+
+</html>

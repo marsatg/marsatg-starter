@@ -1,0 +1,163 @@
+{
+  "groups": [
+    // TODO http-local
+    {
+      "sourceType":"org.marsatg.properties.HttpProperties",
+      "name":"http-local",
+      "type":"org.marsatg.properties.HttpProperties"
+    },
+    // TODO http-local.server
+    {
+      "sourceType":"org.marsatg.properties.HttpServerProperties",
+      "name":"http-local.server",
+      "type":"org.marsatg.properties.HttpServerProperties"
+    },
+    // TODO netty-local
+    {
+      "sourceType":"org.marsatg.netty.NettyProperties",
+      "name":"netty-local",
+      "type":"org.marsatg.netty.NettyProperties"
+    },
+    // TODO netty-local.server
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "name":"netty-local.server",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    }
+
+  ],
+  "properties": [
+    // TODO http-local
+    {
+      "sourceType":"org.marsatg.properties.HttpProperties",
+      "defaultValue":"",
+      "name":"http-local.server",
+      "description":"远程服务信息配置",
+      "type":"org.marsatg.properties.HttpProperties"
+    },
+    {
+      "sourceType":"org.marsatg.properties.HttpProperties",
+      "defaultValue":"",
+      "name":"http-local.applicationName",
+      "description":"当前jar的http客户端名称",
+      "type":"org.marsatg.properties.HttpProperties"
+    },
+    // TODO http-local.server
+    {
+      "sourceType":"org.marsatg.properties.HttpServerProperties",
+      "defaultValue":"server",
+      "name":"http-local.server.name",
+      "description":"远程服务名称",
+      "type":"org.marsatg.properties.HttpServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.properties.HttpServerProperties",
+      "defaultValue":"localhost",
+      "name":"http-local.server.host",
+      "description":"远程服务Host",
+      "type":"org.marsatg.properties.HttpServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.properties.HttpServerProperties",
+      "defaultValue":"8080",
+      "name":"http-local.server.port",
+      "description":"远程服务端口",
+      "type":"org.marsatg.properties.HttpServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.properties.HttpServerProperties",
+      "defaultValue":"http",
+      "name":"http-local.server.protocol",
+      "description":"远程服务协议",
+      "type":"org.marsatg.properties.HttpServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.properties.HttpServerProperties",
+      "defaultValue":"",
+      "name":"http-local.server.contextPath",
+      "description":"远程服务contextPath",
+      "type":"org.marsatg.properties.HttpServerProperties"
+    },
+    // TODO netty-local
+    {
+      "sourceType":"org.marsatg.netty.NettyProperties",
+      "defaultValue":"application",
+      "name":"netty-local.applicationName",
+      "description":"当前服务作为 Netty-server 时的名称",
+      "type":"org.marsatg.netty.NettyProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyProperties",
+      "defaultValue":"10099",
+      "name":"netty-local.applicationPort",
+      "description":"当前服务作为  Netty-server 时的端口",
+      "type":"org.marsatg.netty.NettyProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyProperties",
+      "defaultValue":"false",
+      "name":"netty-local.isFixedThreadPool",
+      "description":"服务端是否使用 FixedThreadPool 线程池(默认使用CachedThreadPool)",
+      "type":"org.marsatg.netty.NettyProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyProperties",
+      "defaultValue":"5",
+      "name":"netty-local.threads",
+      "description":"服务端使用 FixedThreadPool 线程池时的最大线程数量",
+      "type":"org.marsatg.netty.NettyProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyProperties",
+      "defaultValue":"6000",
+      "name":"netty-local.requestBlockTimeout",
+      "description":"客户端（阻塞）调用服务端最大超时时间(毫秒)",
+      "type":"org.marsatg.netty.NettyProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyProperties",
+      "defaultValue":"",
+      "name":"netty-local.server",
+      "description":"当前服务作为  Netty-client 时的服务端配置",
+      "type":"org.marsatg.netty.NettyProperties"
+    },
+    // TODO netty-local.server
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "defaultValue":"application",
+      "name":"netty-local.server.name",
+      "description":" Netty-server Name",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "defaultValue":"localhost",
+      "name":"netty-local.server.host",
+      "description":" Netty-server Host",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "defaultValue":"10099",
+      "name":"netty-local.server.port",
+      "description":" Netty-server Port",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "defaultValue":"5000",
+      "name":"netty-local.server.reConnectTnterval",
+      "description":" 服务器重连时间间隔",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "defaultValue":"60",
+      "name":"netty-local.server.maxReConnectTimes",
+      "description":" 服务器重连最大次数",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    }
+  ]
+}
+
+
