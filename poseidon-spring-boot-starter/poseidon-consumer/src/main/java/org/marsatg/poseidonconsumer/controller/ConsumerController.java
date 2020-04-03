@@ -1,12 +1,9 @@
 package org.marsatg.poseidonconsumer.controller;
 
 import com.alibaba.fastjson.JSON;
-import org.marsatg.http.Response;
-import org.marsatg.netty.ChannelContext;
 import org.marsatg.netty.NettyRequest;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,6 +47,16 @@ public class ConsumerController {
     @ResponseBody
     public String fail(){
         NettyRequest nettyRequest = NettyRequest.invokeBlock("nettyServer", "hello", "time2", "不用等待");
+        Object result = nettyRequest.getResult();
+        return JSON.toJSONString(result);
+    }
+
+
+    @RequestMapping("person")
+    @ResponseBody
+    public String person(){
+        Long  x = Integer.MAX_VALUE + 1L;
+        NettyRequest nettyRequest = NettyRequest.invokeBlock("nettyServer", "hello", "object", "sas");
         Object result = nettyRequest.getResult();
         return JSON.toJSONString(result);
     }

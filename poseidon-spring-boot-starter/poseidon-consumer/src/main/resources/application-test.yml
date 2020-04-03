@@ -1,0 +1,6 @@
+netty-local:
+  applicationName: consumer001
+  server[0]:
+    host: 223.240.76.243
+    name: xinzhan
+    port: 9096

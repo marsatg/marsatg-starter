@@ -1,0 +1,6 @@
+netty-local:
+  applicationName: consumer001
+  server[0]:
+    host: localhost
+    name: realname-api
+    port: 10071
