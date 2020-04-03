@@ -110,7 +110,7 @@ public class NettyRequest {
         Thread thisThread = Thread.currentThread();
         int hash = thisThread.hashCode();
         accept.setHash(hash);
-        ChannelContext.logger.info("NettyClient：" + url + " 执行请求：hash：" + hash + " -> thread:" + thisThread.getName());
+        ChannelContext.logger.info("NettyRequest：" + url + " 执行请求：hash：" + hash + " -> thread:" + thisThread.getName());
         ByteBuf byteBuf = accept.getByteBuf();
         try {
 
@@ -152,7 +152,7 @@ public class NettyRequest {
         Thread thisThread = Thread.currentThread();
         int hash = thisThread.hashCode();
         accept.setHash(hash);
-        ChannelContext.logger.info("NettyClient：执行请求：hash：" + hash + " -> thread:" + thisThread.getName());
+        ChannelContext.logger.info("NettyRequest：执行请求：hash：" + hash + " -> thread:" + thisThread.getName());
         ByteBuf byteBuf = accept.getByteBuf();
         try {
             ChannelContext.saveCallServerCount(serverName);
@@ -179,11 +179,12 @@ public class NettyRequest {
     }
 
 
+
     private void invokeNonBlockRequest(String serverName, String serviceName, String methodName, Object... args) {
         ChannelHandlerContext context = this.ensureActive(serverName);
         NettyAccept accept = this.getNettyAccept(serviceName, methodName, args);
         ByteBuf byteBuf = accept.getByteBuf();
-        ChannelContext.logger.info("NettyClient：执行请求：(非阻塞)");
+        ChannelContext.logger.info("NettyRequest：执行请求：(非阻塞)");
         try {
             context.writeAndFlush(byteBuf).sync();
         } catch (Exception e) {
