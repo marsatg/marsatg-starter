@@ -1,5 +1,6 @@
 package org.marsatg.netty;
 
+import org.apache.commons.lang3.StringUtils;
 import org.marsatg.netty.client.NettyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,20 @@ public class Reconnect implements Runnable {
 
 
     public static void autoConnect(NettyProperties nettyProperties, NettyServerProperties nettyServerProperties) {
-        Reconnect reconnect = new Reconnect(nettyProperties, nettyServerProperties);
-        startService.submit(reconnect);
+        if(isNotEmpty(nettyServerProperties)){
+            Reconnect reconnect = new Reconnect(nettyProperties, nettyServerProperties);
+            startService.submit(reconnect);
+        }else {
+            logger.info("NettyServerProperties is empty , and not start -> "+nettyServerProperties.toString());
+
+        }
+    }
+
+    private static boolean isNotEmpty(NettyServerProperties nettyServerProperties){
+        String name = nettyServerProperties.getName();
+        String host = nettyServerProperties.getHost();
+        Integer port = nettyServerProperties.getPort();
+        return StringUtils.isNotBlank(name) && StringUtils.isNotBlank(host) && port != null;
     }
 
     public static boolean manualConnect(NettyProperties properties, NettyServerProperties serverProperties){
@@ -100,6 +113,7 @@ public class Reconnect implements Runnable {
         }
         if (!client.isConnect()) {
             logger.info("连接失败(超时" + second + "秒) NettyServer (" + serverHost + ":" + serverPort + ")...");
+            logger.info("稍后将在服务执行时，再次尝试连接...");
         }
     }
 

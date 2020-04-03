@@ -3,6 +3,8 @@ package org.marsatg.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import org.marsatg.http.WebManageConstants;
 
 import org.slf4j.Logger;
@@ -19,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChannelContext {
 
     public static Logger logger = LoggerFactory.getLogger(ChannelContext.class);
-    private static Map<String, ChannelHandlerContext> contextMap = new ConcurrentHashMap<>();
+    private static volatile Map<String, ChannelHandlerContext> contextMap = new ConcurrentHashMap<>();
     private static Map<String, Long> callServerCountMap = new ConcurrentHashMap<>();
 
     public static Map<String, ChannelHandlerContext> getContextMap() {

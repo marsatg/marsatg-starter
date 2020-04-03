@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.StandardAnnotationMetadata;
 
-public class WebManageConstants implements ImportBeanDefinitionRegistrar {
+public class WebManageConstants implements ImportBeanDefinitionRegistrar{
 
     private static boolean countClientCall = false;
 

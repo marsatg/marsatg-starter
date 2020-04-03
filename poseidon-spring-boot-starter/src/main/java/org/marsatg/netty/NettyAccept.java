@@ -11,6 +11,48 @@ import java.util.Map;
 
 public class NettyAccept implements Serializable {
 
+    private static final SerializerFeature FEATURE = SerializerFeature.WriteMapNullValue;
+
+
+    private int state = 200;
+
+    private boolean useUrl = false;
+
+    private String url;
+
+    private Integer hash;
+
+    private Object data;
+
+    private boolean block = true;
+
+    private String serviceName;
+
+    private String methodName;
+
+    private Object args[];
+
+    @Override
+    public String toString() {
+        Map<String,Object> map = new HashMap<>();
+        map.put("state",state);
+        map.put("useUrl",useUrl);
+        map.put("url",url);
+        map.put("hash",hash);
+        map.put("data",data);
+        map.put("serviceName",serviceName);
+        map.put("methodName",methodName);
+        map.put("block",block);
+        map.put("args",args);
+        return JSON.toJSONString(map,FEATURE);
+    }
+
+
+
+
+
+
+
     public NettyAccept() {
     }
 
@@ -32,35 +74,13 @@ public class NettyAccept implements Serializable {
     }
 
 
-
-
-
-
-
-    private Integer hash;
-
-    private Object data;
-
-    private boolean block = true;
-
-    private String serviceName;
-
-    private String methodName;
-
-    private Object args[];
-
-    @Override
-    public String toString() {
-        Map<String,Object> map = new HashMap<>();
-        map.put("hash",hash);
-        map.put("data",data);
-        map.put("serviceName",serviceName);
-        map.put("methodName",methodName);
-        map.put("block",block);
-        map.put("args",args);
-        return JSON.toJSONString(map, SerializerFeature.WriteMapNullValue);
+    public String getUrl() {
+        return url;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public Object getData() {
         return data;
@@ -108,6 +128,22 @@ public class NettyAccept implements Serializable {
 
     public void setBlock(boolean block) {
         this.block = block;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public boolean isUseUrl() {
+        return useUrl;
+    }
+
+    public void setUseUrl(boolean useUrl) {
+        this.useUrl = useUrl;
     }
 
     public ByteBuf getByteBuf(){

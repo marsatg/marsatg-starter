@@ -1,14 +1,18 @@
 package org.marsatg.annotation;
 
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.omg.CORBA.Object;
+import org.springframework.context.annotation.Import;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.lang.annotation.*;
+
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Method {
+@Inherited
+@Documented
+@Import(RequestMapping.class)
+public @interface Method{
 
     String value() default "";
 

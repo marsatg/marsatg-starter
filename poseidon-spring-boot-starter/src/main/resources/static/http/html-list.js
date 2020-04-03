@@ -1,9 +1,26 @@
+$(function () {
+    loadHtml("serviceList")
+    applicationInfo()
+})
+
+
+function getUrl(category) {
+    var url = getHostAndPort() + "poseidon-web-manage/" + category
+    function getHostAndPort() {
+        return window.location.href.split("marsatg.html")[0];
+    }
+    return url;
+}
+
+
+
 var vue = new Vue({
     el: "#showBox",
     data: {
         serviceList: [],
         clickServiceName: "",
         blockRequestCount:0,
+        counter:0,
         methodList: [],
         clientList: [],
         serverList: []
@@ -87,6 +104,7 @@ function getServerList() {
     getListData("serverList", new Object(), function (res) {
         vue.serverList = res.list;
         vue.blockRequestCount = res.blockRequestCount;
+        vue.counter = res.counter;
         console.log(res.blockRequestCount)
     })
 }
@@ -140,15 +158,6 @@ function getListData(category, params, callback) {
 }
 
 
-function getUrl(category) {
-    var url = getHostAndPort() + "/poseidon-web-manage/" + category
-
-    function getHostAndPort() {
-        return window.location.href.split("marsatg.html")[0];
-    }
-
-    return url;
-}
 
 
 function postJSON(URL, data, callback) {

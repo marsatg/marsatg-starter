@@ -37,7 +37,7 @@ public class NettyClient {
             return 1;
         }
     };
-    public static final Long timeout = 2500L;
+    public static final Long timeout = 3000L;
 
 
     public boolean isConnect() {

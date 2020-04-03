@@ -1,6 +1,7 @@
 package org.marsatg.http;
 
 import org.marsatg.PoseidonConstants;
+import org.marsatg.executors.NameExecutor;
 import org.marsatg.proxy.BeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +20,18 @@ public class ServerController{
     private static Logger logger = LoggerFactory.getLogger(ServerController.class);
 
     @Autowired
-    BeanProxyFactory poseidonProcessorBean;
+    NameExecutor nameExecutor;
+
 
 
     @RequestMapping(PoseidonConstants.ACCEPT_REQUEST_MAPPING)
     @ResponseBody
-    public Response accept(@RequestBody Request request){
+    public ResponseHolder accept(@RequestBody Request request){
         String consumerName = request.getConsumerName();
         String serviceName = request.getServiceName();
         String methodName = request.getMethodName();
         Object[] args = request.getArgs();
-        return poseidonProcessorBean.invoke(consumerName,serviceName,methodName,args);
+        return nameExecutor.invoke(consumerName,serviceName,methodName,args);
     }
 
 

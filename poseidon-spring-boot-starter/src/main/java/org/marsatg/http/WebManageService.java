@@ -157,6 +157,9 @@ public class WebManageService {
         for(String serverName:serverNames){
             ChannelHandlerContext context = contextMap.get(serverName);
             InetSocketAddress addr = (InetSocketAddress)context.channel().remoteAddress();
+            if(addr == null){
+                continue;
+            }
             JSONObject object = new JSONObject();
             object.put("serverHost",addr.getHostName());
             object.put("serverPort",addr.getPort());
@@ -168,6 +171,10 @@ public class WebManageService {
         result.put("list",list);
         result.put("blockThreadCount",ClientHandler.getThreadMap().size());
         result.put("blockRequestCount",ClientHandler.getRequestMap().size());
+        result.put("blockRequestMap",ClientHandler.getRequestMap());
+        result.put("blockThreadMap",ClientHandler.getThreadMap());
+        result.put("counter",ClientHandler.counter.get());
+        result.put("contextMap",contextMap.size());
         return result.toJSONString();
     }
 

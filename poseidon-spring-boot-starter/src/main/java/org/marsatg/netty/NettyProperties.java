@@ -27,6 +27,9 @@ public class NettyProperties {
     @ConfigField(value = "6000",description = "客户端（阻塞）调用服务端最大超时时间")
     private Integer requestBlockTimeout = 6000;
 
+    @ConfigField(value = "true",description = "服务端是否打印接收的参数")
+    private boolean debugParameter = true;
+
 
     @ConfigField(value = "",description = "当前服务作为  Netty-client 时的服务端配置")
     private List<NettyServerProperties> server = new ArrayList<>();
@@ -90,5 +93,18 @@ public class NettyProperties {
 
     public void setIsFixedThreadPool(boolean fixedThreadPool) {
         isFixedThreadPool = fixedThreadPool;
+    }
+
+
+    public void setFixedThreadPool(boolean fixedThreadPool) {
+        isFixedThreadPool = fixedThreadPool;
+    }
+
+    public boolean isDebugParameter() {
+        return debugParameter;
+    }
+
+    public void setDebugParameter(boolean debugParameter) {
+        this.debugParameter = debugParameter;
     }
 }

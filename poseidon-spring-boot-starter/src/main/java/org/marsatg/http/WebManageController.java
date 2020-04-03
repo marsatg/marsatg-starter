@@ -91,7 +91,7 @@ public class WebManageController {
         config.addAllowedOrigin("*");
         config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
-        logger.info(" ================= 初始化跨域过滤器 ================");
+        logger.info("init CorsFilter ... ");
         return new CorsFilter(source);
     }
 }

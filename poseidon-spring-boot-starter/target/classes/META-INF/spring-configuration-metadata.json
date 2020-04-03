@@ -102,6 +102,13 @@
     },
     {
       "sourceType":"org.marsatg.netty.NettyProperties",
+      "defaultValue":"true",
+      "name":"netty-local.debugParameter",
+      "description":"服务端是否debug打印客户端参数",
+      "type":"org.marsatg.netty.NettyProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyProperties",
       "defaultValue":"5",
       "name":"netty-local.threads",
       "description":"服务端使用 FixedThreadPool 线程池时的最大线程数量",
@@ -155,6 +162,27 @@
       "defaultValue":"60",
       "name":"netty-local.server.maxReConnectTimes",
       "description":" 服务器重连最大次数",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "defaultValue":"false",
+      "name":"netty-local.server.useGroup",
+      "description":" 是否开启负载均衡，若为true，则需要指定groupName和groupWeight",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "defaultValue":"",
+      "name":"netty-local.server.groupName",
+      "description":"开启负载均衡时的组名称",
+      "type":"org.marsatg.netty.NettyServerProperties"
+    },
+    {
+      "sourceType":"org.marsatg.netty.NettyServerProperties",
+      "defaultValue":"1",
+      "name":"netty-local.server.groupWeight",
+      "description":"开启负载均衡时当前服务的权重",
       "type":"org.marsatg.netty.NettyServerProperties"
     }
   ]

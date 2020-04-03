@@ -2,28 +2,44 @@ package org.marsatg.netty.factory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marsatg.netty.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import org.springframework.stereotype.Component;
 
-import java.applet.AppletContext;
+
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Component
 @AutoConfigureAfter(NettyProperties.class)
-public class ClientFactory implements InitializingBean,ApplicationContextAware {
+public class ClientFactory implements InitializingBean,ApplicationContextAware{
 
+    private static Logger logger = LoggerFactory.getLogger(ClientFactory.class);
     private static ApplicationContext context;
     private static NettyProperties properties;
+    private static Boolean active = null;
+    private static Boolean lazy = false;
 
     public static NettyProperties getNettyProperties() {
         return nettyProperties;
+    }
+
+    public static void setActive(Boolean active) {
+        if(ClientFactory.active == null){
+            ClientFactory.active = active;
+        }
+    }
+
+
+    public static void setLazy(Boolean lazy) {
+        ClientFactory.lazy = lazy;
     }
 
     @Override
@@ -32,14 +48,20 @@ public class ClientFactory implements InitializingBean,ApplicationContextAware {
     }
 
 
-
-
     private static NettyProperties nettyProperties;
 
 
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        if(!active){
+            logger.info("@EnableNettyClient's profiles not match spring.boot.active.profile, NettyClient will not be start ");
+            return;
+        }
+        if(lazy){
+            logger.info("@EnableNettyClient's lazy is true , NettyClient will be start where on call");
+            return;
+        }
         nettyProperties = context.getBean(NettyProperties.class);
         NettyRequest.setBlockTimeOut(nettyProperties.getRequestBlockTimeout());
         List<NettyServerProperties> nettyServerProperties = nettyProperties.getServer();
@@ -67,6 +89,8 @@ public class ClientFactory implements InitializingBean,ApplicationContextAware {
         }
         sets = null;
     }
+
+
 
 
 

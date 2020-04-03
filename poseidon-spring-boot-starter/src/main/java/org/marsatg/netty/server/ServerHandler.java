@@ -1,28 +1,20 @@
 package org.marsatg.netty.server;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.*;
-import io.netty.util.AttributeKey;
+import org.marsatg.executors.NameExecutor;
+import org.marsatg.executors.UrlExecutor;
+import org.marsatg.http.ResponseHolder;
 import org.marsatg.http.WebManageConstants;
 import org.marsatg.netty.client.ClientInfo;
 import org.marsatg.proxy.BeanProxyFactory;
-import org.marsatg.http.Response;
 import org.marsatg.netty.NettyAccept;
 import org.marsatg.netty.NettyProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.type.AnnotationMetadata;
 
 
 import java.net.InetSocketAddress;
@@ -39,24 +31,35 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
 
     private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private static BeanProxyFactory proxyFactory;
-    private static String consumerName = "";
+    private static UrlExecutor urlExecutor;
+    private static NameExecutor nameExecutor;
+    private static String applicationName = "";
     private NettyProperties properties;
     private static Map<String, ClientInfo> clientMap = new ConcurrentHashMap<>();
     private static Map<Integer, Long> callCountMap = new ConcurrentHashMap<>();
     private static ExecutorService service = null;
 
 
-    public static Map<String, ClientInfo> getClientMap() {return clientMap;}
-    public static Map<Integer, Long> getCallCountMap() { return callCountMap; }
-    public static Long getClientCallCount(int clientChannelHash) { return callCountMap.get(clientChannelHash);}
-    public static void initHandlerExecutorService(int threads,boolean isFixedThreadPool){
-        if(service != null){
+    public static Map<String, ClientInfo> getClientMap() {
+        return clientMap;
+    }
+
+    public static Map<Integer, Long> getCallCountMap() {
+        return callCountMap;
+    }
+
+    public static Long getClientCallCount(int clientChannelHash) {
+        return callCountMap.get(clientChannelHash);
+    }
+
+    public static void initHandlerExecutorService(int threads, boolean isFixedThreadPool) {
+        if (service != null) {
             return;
         }
-        if(isFixedThreadPool){
+        if (isFixedThreadPool) {
             service = Executors.newFixedThreadPool(threads);
-            logger.info("NettyServer -> FixedThreadPool -> threads:"+threads);
-        }else {
+            logger.info("NettyServer -> FixedThreadPool -> threads:" + threads);
+        } else {
             service = Executors.newCachedThreadPool();
             logger.info("NettyServer -> CachedThreadPool");
         }
@@ -68,18 +71,14 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
     @Override
     public void afterPropertiesSet() throws Exception {
         proxyFactory = context.getBean(BeanProxyFactory.class);
+        urlExecutor = context.getBean(UrlExecutor.class);
+        nameExecutor = context.getBean(NameExecutor.class);
     }
 
 
-
-    public ServerHandler(NettyProperties properties) {
+    public ServerHandler(NettyProperties properties) throws Exception {
         this.properties = properties;
-        if (this.properties == null) {
-            this.properties = new NettyProperties();
-            this.properties.setApplicationName("netty-server");
-            this.properties.setApplicationPort(10079);
-        }
-        consumerName = this.properties.getApplicationName();
+        applicationName = this.properties.getApplicationName();
     }
 
     public ServerHandler() {
@@ -88,7 +87,6 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        boolean b = ctx.channel().hasAttr(AttributeKey.valueOf("123"));
         super.channelActive(ctx);
     }
 
@@ -101,11 +99,11 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object message) throws Exception {
-        service.submit(new ServerExecutorTask(ctx,message));
+        service.submit(() -> handlerRequest(ctx, message));
     }
 
 
-    private static void handlerRequest(ChannelHandlerContext ctx,Object message){
+    private static void handlerRequest(ChannelHandlerContext ctx, Object message) {
         NettyAccept accept = null;
         try {
             accept = JSON.parseObject(message.toString(), NettyAccept.class);
@@ -118,18 +116,27 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
         String serviceName = accept.getServiceName();
         String methodName = accept.getMethodName();
         Channel channel = ctx.channel();
-        if(accept.isBlock()){
+        if (accept.isBlock()) {
             // TODO 如果是阻塞请求，执行完返回结果
-            Response response = proxyFactory.invoke(channel.remoteAddress().toString(), serviceName, methodName, args);
-            accept.setData(response);
+            ResponseHolder responseHolder;
+            if (accept.isUseUrl()) {
+                responseHolder = urlExecutor.invoke(accept.getUrl(), args);
+            } else {
+                responseHolder = nameExecutor.invoke(channel.remoteAddress().toString(), serviceName, methodName, args);
+            }
+            accept.setData(responseHolder.getData());
+            accept.setState(responseHolder.getState());
             ctx.writeAndFlush(accept.getByteBuf());
-        }else {
+        } else {
             // TODO 如果是非阻塞请求，执行完不返回结果
-            proxyFactory.invoke(channel.remoteAddress().toString(), serviceName, methodName, args);
+            if (accept.isUseUrl()) {
+                urlExecutor.invoke(accept.getUrl(), args);
+            } else {
+                nameExecutor.invoke(channel.remoteAddress().toString(), serviceName, methodName, args);
+            }
         }
         count(channel);
     }
-
 
 
     // TODO  客户端 调用统计
@@ -139,10 +146,9 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
             int hashCode = channel.hashCode();
             Long count = callCountMap.get(hashCode);
             count += 1;
-            callCountMap.put(hashCode,count);
+            callCountMap.put(hashCode, count);
         }
     }
-
 
 
     // TODO  异常捕获
@@ -169,8 +175,19 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
             String clientname = msg.split("=")[1];
             ClientInfo clientInfo = clientMap.get(clientname);
             if (clientInfo != null) {
-                ctx.writeAndFlush("当前已存在：" + clientname + " 的客户端，此连接将不会登记到服务页面，但不会影响当前客户端的连接与使用");
-                return;
+                int num = 1;
+                String suffixName = "";
+                while (true) {
+                    String perfixKey = clientname + "(" + num + ")";
+                    if (startsWith(perfixKey)) num++;
+                    suffixName = perfixKey + ctx.channel().remoteAddress().toString();
+                    clientInfo = clientMap.get(suffixName);
+                    if (clientInfo == null) {
+                        ctx.writeAndFlush("当前已存在：" + clientname + " 的客户端，此连接将会使用" + suffixName + "登记到服务页面");
+                        clientname = suffixName;
+                        break;
+                    }
+                }
             }
             InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
             int channelHash = ctx.channel().hashCode();
@@ -181,18 +198,25 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
             client.setClientPort(address.getPort());
             client.setChannelHash(channelHash);
             logger.info("客户端：" + clientname + " 已加入 ->" + client.getClientHost());
-            callCountMap.put(channelHash,0L);
+            callCountMap.put(channelHash, 0L);
             clientMap.put(clientname, client);
         }
     }
 
-
+    private static boolean startsWith(String perfixKey) {
+        Set<String> keys = clientMap.keySet();
+        for (String k : keys) {
+            if (k.startsWith(perfixKey)) return true;
+        }
+        return false;
+    }
 
     // TODO  移除客户端连接
     private void removeClient(String host) {
         Set<String> clientNames = clientMap.keySet();
         for (String name : clientNames) {
             ClientInfo ci = clientMap.get(name);
+            if (ci == null) continue;
             if (ci.getClientHost().equals(host)) {
                 clientMap.remove(name);
                 callCountMap.remove(ci.getChannelHash());
@@ -201,8 +225,6 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
             }
         }
     }
-
-
 
 
     // TODO 为同一个通道
@@ -218,7 +240,7 @@ public class ServerHandler extends SimpleChannelInboundHandler implements Initia
 
         @Override
         public void run() {
-            handlerRequest(ctx,msg);
+            handlerRequest(ctx, msg);
         }
     }
 }
